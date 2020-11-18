@@ -3,21 +3,12 @@ const fs = require('fs');
 const app = express();
 
 app.use(express.json());
-// basic routing
-// app.get('/', (req, res) => {
-//   res.status(200).send('Hello from the server side!');
-// });
 
-// app.post('/', (req, res) => {
-//   res
-//     .status(200)
-//     .json({ message: 'Hello from the server side', app: 'Natours' });
-// });
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
@@ -26,9 +17,9 @@ app.get('/api/v1/tours', (req, res) => {
       pelancongan: tours,
     },
   });
-});
+};
 
-app.get('/api/v1/tours/:id', (req, res) => {
+const getTour = (req, res) => {
   console.log(req.params);
 
   const id = req.params.id * 1;
@@ -38,9 +29,9 @@ app.get('/api/v1/tours/:id', (req, res) => {
     data: { tour },
     // tour is declared above
   });
-});
+};
 
-app.post('/api/v1/tours', (req, res) => {
+const createTour = (req, res) => {
   console.log(req.body);
   const newId = tours[tours.length - 1].id + 1;
 
@@ -69,9 +60,9 @@ app.post('/api/v1/tours', (req, res) => {
   );
   // status 200 is ok
   // status 201 is created
-});
+};
 
-app.patch('/api/v1/tours/:id', (req, res) => {
+const updateTour = (req, res) => {
   if (req.params.id * 1 > tours.length) {
     return res.status(400).json({
       status: 'fail',
@@ -83,7 +74,37 @@ app.patch('/api/v1/tours/:id', (req, res) => {
     status: 'success',
     data: { tour: '<Updated tour here...>' },
   });
-});
+};
+
+const deleteTour = (req, res) => {
+  if (req.params.id * 1 > tours.length) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  //204 means no content
+  res.status(204).json({
+    status: 'success',
+    data: { tour: '<Updated tour here...>' },
+  });
+};
+
+// app.get('/api/v1/tours', getAllTours);
+// app.get('/api/v1/tours/:id', getTour);
+// app.post('/api/v1/tours', createTour);
+// //apply update verb
+// app.patch('/api/v1/tours/:id', updateTour);
+// //delete request
+// app.delete('/api/v1/tours/:id', deleteTour);
+
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
 //basic port configuration
 const port = 3000;
