@@ -27,6 +27,22 @@ const tourSchema = new mongoose.Schema({
 });
 
 const Tour = mongoose.model('Tour', tourSchema);
+//👆🏾create a model with the name of Tour using the tourSchema
+
+const testTour = new Tour({
+  name: 'The Money Heist',
+  ratitng: 2.7,
+  price: 422,
+});
+
+testTour
+  .save()
+  .then((doc) => {
+    console.log(doc);
+  })
+  .catch((err) => {
+    console.log('ERROR 💥:', err);
+  });
 
 console.log(process.env);
 //basic port configuration
